@@ -1,0 +1,8 @@
+name: stash-omnisearch
+description: search all the things on stash
+version: 0.0.3
+ui:
+  css:
+    - theme.css
+  javascript:
+    - interface.js

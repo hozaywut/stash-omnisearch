@@ -1,0 +1,89 @@
+body.visible {
+  #omnisearch {
+    display: flex;
+  }
+}
+#omnisearch {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(5px);
+  height: 100vh;
+  width: 100vw;
+  z-index: 10000;
+  align-items: center;
+  flex-direction: column;
+  padding-top: 200px;
+
+  display: none;
+  &.visible {
+    display: flex;
+  }
+
+  .omnisearch-backdrop {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    height: 100vh;
+    width: 100vw;
+    z-index: 1;
+  }
+
+  .omnisearch-input {
+    padding-left: 10px;
+    border-radius: 5px;
+    border: none;
+    opacity: 0.9;
+    width: 300px;
+    height: 40px;
+    box-shadow: inset 0 0 0 1px #000;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 2;
+    &::before {
+      content: "Search";
+      display: block;
+      width: 100%;
+      position: relative;
+      height: 20px;
+      font-size: 40px;
+    }
+  }
+
+  .omnisearch-results {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 2;
+    .omnisearch-result {
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      opacity: 0.9;
+      width: 300px;
+      height: 40px;
+      border: rgba(255, 255, 255, 0.2) 1px solid;
+      transition: opacity 0.2s ease-in-out, border 0.2s ease-in-out;
+      display: flex;
+      flex-direction: row;
+      gap: 5px;
+      align-items: center;
+      &:hover {
+        opacity: 1;
+        border: rgba(255, 255, 255, 0.7) 1px solid;
+        transition: opacity 0.2s ease-in-out, border 0.2s ease-in-out;
+      }
+      .omnisearch-result-title {
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .omnisearch-result-type {
+        font-style: italic;
+      }
+    }
+  }
+}

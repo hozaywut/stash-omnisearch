@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "es2017", // or a later version
+    "lib": ["es2021", "dom", "es5", "es6", "es7", "dom.iterable"],
+    "noEmit": true,
+    "allowImportingTsExtensions": true
+    // other options...
+    // "moduleResolution": "node",
+  }
+}

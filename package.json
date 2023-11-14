@@ -1,0 +1,21 @@
+{
+  "name": "stash-omnisearch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx concurrently --kill-others \"npx sass --watch src/styles.scss dist/stash-omnisearch/theme.css\" \"npx bun build --watch ./src/interface.ts --outdir ./dist/stash-omnisearch/\"",
+    "build-minified": "npx concurrently --kill-others \"npx sass --watch src/styles.scss dist/stash-omnisearch/theme.css --style compressed\" \"npx bun build --watch ./src/interface.ts --outdir ./dist/stash-omnisearch/ --minify\""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fuse.js": "^7.0.0"
+  },
+  "devDependencies": {
+    "bun": "^1.0.11",
+    "concurrently": "^8.2.2",
+    "sass": "^1.69.5",
+    "typescript": "^5.2.2"
+  }
+}
