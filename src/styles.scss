@@ -67,22 +67,54 @@ body.visible {
       border: rgba(255, 255, 255, 0.2) 1px solid;
       transition: opacity 0.2s ease-in-out, border 0.2s ease-in-out;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       gap: 5px;
-      align-items: center;
+      align-items: left;
       &:hover {
         opacity: 1;
         border: rgba(255, 255, 255, 0.7) 1px solid;
         transition: opacity 0.2s ease-in-out, border 0.2s ease-in-out;
       }
-      .omnisearch-result-title {
-        font-weight: bold;
+      .omnisearch-result-header{
+        display: flex;
+        flex-direction: row;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        width: 100%;
+        gap: 4px;
+        .omnisearch-result-title {
+          font-weight: bold;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .omnisearch-result-type {
+          font-style: italic;
+        }
       }
-      .omnisearch-result-type {
-        font-style: italic;
+     
+      .omnisearch-result-details{
+        display: none;
+      }
+      .omnisearch-result-image{
+        display: none;
+        width: 100%;
+      }
+      &.expanded{
+        height: unset;
+        flex-direction: column-reverse;
+        // .omnisearch-result-header{}
+        .omnisearch-result-details{
+          display: block;
+          white-space: nowrap;      /* Prevents text from wrapping */
+          overflow: hidden;         /* Hides overflowing text */
+          text-overflow: ellipsis;  /* Displays an ellipsis (...) when text overflows */
+          width: 100%;    
+        }
+        .omnisearch-result-image{
+          display: block;
+        }
       }
     }
   }

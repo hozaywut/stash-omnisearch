@@ -1,0 +1,8 @@
+{
+    "emeraldwalk.runonsave": {
+        "commands": [{
+            "match": ".*",
+            "cmd": "rm -rf /Volumes/Stash/plugins/stash-omnisearch && cp -r dist/stash-omnisearch /Volumes/Stash/plugins/stash-omnisearch"
+        }]
+    }
+}

@@ -1,11 +1,13 @@
 import Fuse from "fuse.js";
-type ResultType = "performer" | "scene" | "tag" | "system";
+import query from "./query";
+type ResultType = "performer" | "scene" | "tag" | "system" | "studio";
 
 interface Result {
   id: string; // number as string or string
   type: ResultType;
   label: string;
   details?: string;
+  image?: string;
 }
 interface SystemResult extends Result {
   type: "system";
@@ -70,7 +72,7 @@ const debounce = (func: (args: any) => void, delay: number) => {
     timeout = setTimeout(() => func(args), delay);
   };
 };
-console.log("workrrr");
+
 async function searchAndDisplay(e: InputEvent): Promise<void> {
   const results: Result[] = await comboGqlFetch(searchInput.value);
   let allResults: Result[] = [];
@@ -147,7 +149,13 @@ document.addEventListener("keydown", (e) => {
 });
 
 const openResult = (result: Result) => {
-  const searchTypes: ResultType[] = ["performer", "scene", "tag"];
+  const searchTypes: ResultType[] = [
+    "performer",
+    "scene",
+    "tag",
+    "scene",
+    "studio",
+  ];
   if (result.type === "system")
     return (window.location.href = (result as SystemResult).url);
   else if (!searchTypes.includes(result.type)) return;
@@ -155,6 +163,7 @@ const openResult = (result: Result) => {
 };
 
 const createResult = (result: Result) => {
+  const allResultDivs = document.querySelectorAll(".omnisearch-result");
   const resultDiv = document.createElement("div");
   resultDiv.classList.add("omnisearch-result");
   resultDiv.addEventListener("click", (e) => openResult(result));
@@ -163,26 +172,50 @@ const createResult = (result: Result) => {
   resultDiv.tabIndex = 0;
 
   // support enter key
-  resultDiv.addEventListener(
-    "keydown",
-    (e) => e.key === "Enter" && openResult(result)
-  );
+  resultDiv.addEventListener("keydown", (e) => {
+    console.log(e);
+    switch (e.key) {
+      case "Enter":
+        openResult(result);
+        break;
+      case " ":
+        e.preventDefault();
+        [...allResultDivs].map((r: any) =>
+          r.setAttribute("class", "omnisearch-result")
+        );
+        resultDiv.classList.toggle("expanded");
+        break;
+      default:
+        break;
+    }
+    // e.key === "Enter" && openResult(result)
+  });
+
+  const resultHeader = document.createElement("div");
+  resultHeader.classList.add("omnisearch-result-header");
 
   const resultType = document.createElement("div");
   resultType.classList.add("omnisearch-result-type");
   resultType.textContent = "[" + result.type[0] + "]";
-  resultDiv.appendChild(resultType);
+  resultHeader.appendChild(resultType);
 
   const resultTitle = document.createElement("div");
   resultTitle.classList.add("omnisearch-result-title");
   resultTitle.textContent = result.label;
-  resultDiv.appendChild(resultTitle);
+  resultTitle.title = result?.details ? result.details : "";
+  resultHeader.appendChild(resultTitle);
 
   const resultDetails = document.createElement("div");
   resultDetails.classList.add("omnisearch-result-details");
   resultDetails.textContent = result?.details ? result.details : "";
   resultDiv.appendChild(resultDetails);
 
+  const resultImage = document.createElement("img");
+  resultImage.classList.add("omnisearch-result-image");
+  resultImage.src = result.image;
+  resultDiv.appendChild(resultImage);
+
+  resultDiv.appendChild(resultHeader);
   return resultDiv;
 };
 
@@ -214,6 +247,10 @@ const comboGqlFetch = async (term: string): Promise<Result[]> => {
     sort: "name",
     direction: "ASC",
   };
+  const studioFilter = {
+    sort: "name",
+    direction: "ASC",
+  };
   const performerFilter = {
     sort: "rating",
     direction: "DESC",
@@ -222,14 +259,16 @@ const comboGqlFetch = async (term: string): Promise<Result[]> => {
     sort: "created_at",
     direction: "DESC",
   };
-  const query =
-    "query FindMatches( $performer_filter: FindFilterType $tag_filter: FindFilterType $scene_filter: FindFilterType) { findPerformers(filter: $performer_filter) { count performers { id name details disambiguation alias_list }} findTags(filter: $tag_filter) { count tags { id name aliases }} findScenes(filter: $scene_filter) { count scenes { id title files details { path }}}}";
   const defaultFilters = {
     q: searchTerm,
     page: 1,
     per_page: maxResultsPerEntity,
   };
   const filters = {
+    studio_filter: {
+      ...defaultFilters,
+      ...studioFilter,
+    },
     performer_filter: {
       ...defaultFilters,
       ...performerFilter,
@@ -244,12 +283,20 @@ const comboGqlFetch = async (term: string): Promise<Result[]> => {
     },
   };
   const result = await gqlFetch(query, filters);
+  const studios = result.findStudios.studios.map((t: GQLResult) => ({
+    id: t.id,
+    type: "studio",
+    label: t.name,
+    details: "",
+    image: t.image_path,
+  }));
   const tags = result.findTags.tags.map((t: GQLResult) => ({
     id: t.id,
     type: "tag",
     label: t.name,
     aliases: t.aliases,
     details: "",
+    image: t.image_path,
   }));
   const performers = result.findPerformers.performers.map((p: GQLResult) => ({
     id: p.id,
@@ -257,6 +304,7 @@ const comboGqlFetch = async (term: string): Promise<Result[]> => {
     label: p.name,
     aliases: [...p.alias_list, p.disambiguation],
     details: "",
+    image: p.image_path,
   }));
   const scenes = result.findScenes.scenes.map((s: GQLResult) => ({
     id: s.id,
@@ -264,6 +312,7 @@ const comboGqlFetch = async (term: string): Promise<Result[]> => {
     label: s.title || s.files[0].path,
     aliases: "",
     details: s.details,
+    image: s.paths.screenshot,
   }));
-  return [...tags, ...performers, ...scenes];
+  return [...tags, ...performers, ...scenes, ...studios];
 };
