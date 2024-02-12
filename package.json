@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "npx concurrently --kill-others \"npx sass --watch src/styles.scss dist/stash-omnisearch/theme.css\" \"npx bun build --watch ./src/interface.ts --outdir ./dist/stash-omnisearch/\"",
-    "build-minified": "npx concurrently --kill-others \"npx sass --watch src/styles.scss dist/stash-omnisearch/theme.css --style compressed\" \"npx bun build --watch ./src/interface.ts --outdir ./dist/stash-omnisearch/ --minify\""
+    "build-minified": "npx concurrently --kill-others \"npx sass --watch src/styles.scss dist/stash-omnisearch/theme.css --style compressed\" \"npx bun build --watch ./src/interface.ts --outdir ./dist/stash-omnisearch/ --minify\"",
+    "deploy": "rm -rf /Volumes/Stash/plugins/stash-omnisearch && cp -r dist/stash-omnisearch /Volumes/Stash/plugins/stash-omnisearch"
   },
   "author": "",
   "license": "ISC",
